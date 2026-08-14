@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <title>Modul: Kiamat & Sains</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        dark: '#0f172a',
+                        card: '#1e293b',
+                        accent: '#6366f1',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Core Reset & No Scroll Constraints */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html {
+            margin: 0; padding: 0;
+            width: 100vw; height: 100dvh; /* 100dvh for accurate mobile height */
+            overflow: hidden; /* STRICT NO SCROLL */
+            background-color: #000;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* App Container mimicking mobile screen on desktop */
+        #app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 480px; /* Mobile width constraint on desktop */
+            margin: 0 auto;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Slide Transition Animations */
+        .slide {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0;
+            transform: translateX(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            padding-top: 4rem; /* Leave space for top progress bar */
+            padding-bottom: 6rem; /* Leave space for bottom nav */
+            justify-content: center; /* Center content vertically */
+            z-index: 0;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .slide.previous {
+            transform: translateX(-20px) scale(0.95);
+        }
+
+        /* UI Elements */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Progress Bar Segmented */
+        .progress-segment {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            margin: 0 2px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #6366f1;
+            transition: width 0.3s linear;
+        }
+        .segment-active .progress-fill { width: 100%; }
+        
+        /* Interactive Areas for Swipe/Tap */
+        #touch-area {
+            position: absolute;
+            top: 4rem; bottom: 5rem; left: 0; right: 0;
+            z-index: 20;
+        }
+
+        /* Typography tweaks for tight spaces */
+        .tight-text { line-height: 1.3; }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <div class="absolute top-0 left-0 w-full pt-4 px-3 flex justify-between z-50" id="progress-container">
+            <!-- Segments injected via JS -->
+        </div>
+
+        <div class="absolute top-6 right-4 z-50 text-xs font-semibold text-slate-400 bg-slate-800/50 px-2 py-1 rounded-full backdrop-blur">
+            <span id="slide-counter">1/13</span>
+        </div>
+
+        <!-- Touch Area for Swiping -->
+        <div id="touch-area"></div>
+
+        <div class="slide active" id="slide-0">
+            <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-900 to-slate-900"></div>
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/20 text-indigo-400 mb-6 shadow-[0_0_30px_rgba(99,102,241,0.3)]">
+                    <i class="fa-solid fa-book-journal-whills text-4xl"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400 mb-4 tight-text">
+                    Kiamat, Dajjal,<br>Sains & Makna Kehidupan
+                </h1>
+                <p class="text-slate-400 text-sm mb-8 px-4">Modul interaktif ringkasan diskusi filosofis dan teologis.</p>
+                
+                <div class="bg-card/80 backdrop-blur border border-indigo-500/30 p-4 rounded-xl text-left">
+                    <p class="text-indigo-300 italic text-sm border-l-2 border-indigo-500 pl-3">
+                        "Kapan kiamat bukan pertanyaan utama. Yang lebih penting adalah bagaimana manusia hidup sebelum kiamat."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-1">
+            <h2 class="text-xl font-bold mb-2 text-white flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-indigo-400"></i> Gambaran Materi
+            </h2>
+            <p class="text-xs text-slate-400 mb-6">Menyentuh 5 dimensi pemikiran utama:</p>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-card border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                    <div class="text-2xl">🌍</div><div class="text-sm font-semibold">Kosmologi</div>
+                </div>
+                <div class="bg-card border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                    <div class="text-2xl">🧠</div><div class="text-sm font-semibold">Filsafat</div>
+                </div>
+                <div class="bg-card border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                    <div class="text-2xl">☪️</div><div class="text-sm font-semibold">Aqidah</div>
+                </div>
+                <div class="bg-card border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                    <div class="text-2xl">🔬</div><div class="text-sm font-semibold">Sains</div>
+                </div>
+                <div class="col-span-2 bg-indigo-900/30 border border-indigo-500/30 p-3 rounded-xl flex items-center gap-3 justify-center">
+                    <div class="text-2xl">👥</div><div class="text-sm font-semibold text-indigo-200">Sosial Akhir Zaman</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-2">
+            <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center text-red-400 mb-4 text-xl">
+                <i class="fa-solid fa-question"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-4 text-white">Paradoks Penciptaan</h2>
+            
+            <div class="bg-card border border-slate-700 rounded-xl p-4 mb-4 relative">
+                <p class="text-sm text-slate-300 italic mb-4 text-center">"Kalau Tuhan menciptakan dunia lalu dihancurkan, bukankah ciptaan-Nya gagal?"</p>
+                <div class="flex items-center justify-between text-xs font-bold text-slate-400 px-2">
+                    <span>Mencipta</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>Hancur</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span class="text-red-400">Gagal?</span>
+                </div>
+            </div>
+
+            <div class="bg-emerald-900/30 border border-emerald-500/50 rounded-xl p-5 text-center">
+                <div class="text-3xl text-red-500 mb-2"><i class="fa-solid fa-xmark"></i></div>
+                <h3 class="font-bold text-white mb-1">TIDAK</h3>
+                <p class="text-sm text-emerald-200">Kiamat bukan kegagalan, melainkan <br><span class="font-bold bg-emerald-500/20 px-2 py-1 rounded mt-1 inline-block">Penyempurnaan Proses</span></p>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-3">
+            <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">
+                <i class="fa-solid fa-film text-blue-400"></i> Ending Memberi Makna
+            </h2>
+
+            <div class="space-y-4">
+                <div class="flex items-start gap-4 bg-slate-800 p-4 rounded-xl">
+                    <div class="text-2xl pt-1">🎬</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-blue-300">Analogi Film</h4>
+                        <p class="text-xs text-slate-400 tight-text">Film butuh awal, konflik, klimaks, & ending. Film tanpa akhir dinilai buruk.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 bg-slate-800 p-4 rounded-xl">
+                    <div class="text-2xl pt-1">🎮</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-purple-300">Analogi Game</h4>
+                        <p class="text-xs text-slate-400 tight-text">Game yang bisa "tamat" memberi rasa puas. Game tanpa akhir (endless) menjebak pemain.</p>
+                    </div>
+                </div>
+                <div class="border-l-4 border-accent pl-4 py-2 mt-2">
+                    <p class="text-sm font-semibold text-white">Kesimpulan Filsafat:</p>
+                    <p class="text-xs text-indigo-300 mt-1 italic">"Kesadaran akan kematian dan akhir dunia yang membuat hidup menjadi bernilai."</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-4">
+            <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">
+                <i class="fa-solid fa-star-and-crescent text-emerald-400"></i> Kiamat Dalam Islam
+            </h2>
+
+            <div class="relative w-full max-w-[280px] mx-auto">
+                <div class="absolute left-4 top-2 bottom-2 w-0.5 bg-slate-700"></div>
+                
+                <div class="relative pl-12 mb-6">
+                    <div class="absolute left-2.5 top-1 w-3.5 h-3.5 rounded-full bg-orange-500 ring-4 ring-slate-900"></div>
+                    <h4 class="font-bold text-sm text-orange-400 mb-1">Tanda Kecil</h4>
+                    <p class="text-xs text-slate-400 tight-text">Pembunuhan, amanah hilang, moral rusak, maksiat terbuka.</p>
+                </div>
+                
+                <div class="relative pl-12 mb-6">
+                    <div class="absolute left-2.5 top-1 w-3.5 h-3.5 rounded-full bg-red-500 ring-4 ring-slate-900"></div>
+                    <h4 class="font-bold text-sm text-red-400 mb-1">Tanda Besar</h4>
+                    <p class="text-xs text-slate-400 tight-text">Matahari dari Barat, Dajjal, Ya'juj Ma'juj.</p>
+                </div>
+
+                <div class="relative pl-12">
+                    <div class="absolute left-1.5 top-1 text-white bg-slate-900 rounded-full z-10"><i class="fa-solid fa-meteor"></i></div>
+                    <h4 class="font-extrabold text-lg text-white tracking-widest bg-slate-800 inline-block px-3 py-1 rounded">KIAMAT</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-5">
+            <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">
+                <i class="fa-solid fa-scale-balanced text-amber-400"></i> Literal atau Simbolik?
+            </h2>
+
+            <div class="flex flex-col gap-4 h-full justify-center">
+                <div class="bg-card border-l-4 border-green-500 p-4 rounded-r-xl shadow-lg">
+                    <h3 class="font-bold text-sm text-green-400 mb-2">1. Pendekatan Literal</h3>
+                    <p class="text-xs text-slate-300 tight-text">Semua terjadi persis secara fisik.<br>
+                    <span class="text-slate-500 mt-1 block">Contoh: Matahari benar-benar terbit dari barat secara astronomis.</span></p>
+                </div>
+
+                <div class="flex justify-center text-slate-500 text-sm font-bold">VS</div>
+
+                <div class="bg-card border-l-4 border-indigo-500 p-4 rounded-r-xl shadow-lg">
+                    <h3 class="font-bold text-sm text-indigo-400 mb-2">2. Pendekatan Simbolik</h3>
+                    <p class="text-xs text-slate-300 tight-text">Teks mengandung unsur kiasan.<br>
+                    <span class="text-slate-500 mt-1 block">Contoh: "Matahari dari barat" bermakna perubahan drastis tatanan dunia/kosmik.</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-6">
+            <h2 class="text-xl font-bold mb-2 text-white flex items-center gap-2">
+                <i class="fa-solid fa-microscope text-cyan-400"></i> Hubungan dgn Sains
+            </h2>
+            <p class="text-[10px] text-cyan-300 bg-cyan-900/30 p-2 rounded mb-6 text-center border border-cyan-800">
+                Murni kemungkinan ilmiah, bukan kepastian tafsir.
+            </p>
+
+            <div class="bg-slate-800 rounded-xl p-4 mb-4">
+                <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-earth-americas text-blue-400"></i> Anomali Geofisika</h4>
+                <div class="flex items-center justify-between text-xs bg-slate-900 p-2 rounded-lg">
+                    <span class="w-1/2 text-center text-slate-400">Medan Magnet / Rotasi Bumi Berubah</span>
+                    <i class="fa-solid fa-arrow-right text-accent mx-2"></i>
+                    <span class="w-1/2 text-center font-bold text-amber-200">Matahari tampak dari Barat</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-4">
+                <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-water text-cyan-400"></i> Sungai Efrat</h4>
+                <div class="flex items-center justify-between text-xs bg-slate-900 p-2 rounded-lg">
+                    <span class="w-1/2 text-center text-slate-400">Perubahan Iklim Global</span>
+                    <i class="fa-solid fa-arrow-right text-accent mx-2"></i>
+                    <span class="w-1/2 text-center font-bold text-amber-200">Sungai Mengering (Dikaitkan Tanda Kiamat)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-7">
+            <div class="w-16 h-16 mx-auto bg-red-900/50 rounded-full flex items-center justify-center text-red-500 text-3xl mb-4 border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-6 text-white text-center">Dajjal</h2>
+
+            <ul class="space-y-3 mb-8 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                <li class="flex items-center gap-3 text-sm text-slate-200">
+                    <i class="fa-solid fa-user-shield text-slate-500 w-5"></i> Sosok Manusia
+                </li>
+                <li class="flex items-center gap-3 text-sm text-slate-200">
+                    <i class="fa-solid fa-clock text-slate-500 w-5"></i> Datang di akhir zaman
+                </li>
+                <li class="flex items-center gap-3 text-sm text-slate-200">
+                    <i class="fa-solid fa-fire text-red-400 w-5"></i> Membawa fitnah/ujian terbesar
+                </li>
+            </ul>
+
+            <div class="flex items-center justify-between bg-slate-800 p-3 rounded-lg text-xs font-bold border border-slate-700">
+                <span class="text-red-400 text-center w-1/3">Fitnah Besar</span>
+                <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                <span class="text-white text-center w-1/3">Isa Turun</span>
+                <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                <span class="text-green-400 text-center w-1/3">Dajjal Kalah</span>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-8">
+            <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">
+                <i class="fa-solid fa-users-rays text-orange-400"></i> Ya'juj & Ma'juj
+            </h2>
+
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-slate-800 p-3 rounded-lg text-center border border-slate-700">
+                    <i class="fa-solid fa-users text-lg text-slate-400 mb-1 block"></i>
+                    <span class="text-xs font-semibold text-slate-200">Gol. Manusia</span>
+                </div>
+                <div class="bg-slate-800 p-3 rounded-lg text-center border border-slate-700">
+                    <i class="fa-solid fa-arrow-up-right-dots text-lg text-slate-400 mb-1 block"></i>
+                    <span class="text-xs font-semibold text-slate-200">Jumlah Masif</span>
+                </div>
+                <div class="bg-slate-800 p-3 rounded-lg text-center border border-slate-700">
+                    <i class="fa-solid fa-burst text-lg text-red-400 mb-1 block"></i>
+                    <span class="text-xs font-semibold text-slate-200">Perusak</span>
+                </div>
+                <div class="bg-slate-800 p-3 rounded-lg text-center border border-slate-700">
+                    <i class="fa-brands fa-fort-awesome text-lg text-slate-400 mb-1 block"></i>
+                    <span class="text-xs font-semibold text-slate-200">Tembok Zulkarnain</span>
+                </div>
+            </div>
+
+            <div class="bg-orange-900/20 border border-orange-500/30 p-3 rounded-xl">
+                <h4 class="text-xs font-bold text-orange-400 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Ranah Spekulasi</h4>
+                <p class="text-[11px] text-slate-400 tight-text">Teori "berada di bawah tanah", "dimensi lain", atau "pulau terpencil" adalah spekulasi modern/konspirasi, bukan ajaran pokok.</p>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-9">
+            <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                <i class="fa-solid fa-brain text-purple-400"></i> Berpikir Kritis
+            </h2>
+            <p class="text-sm text-slate-300 mb-6 tight-text">Islam tidak melarang bertanya. Sebaliknya, agama mendorong untuk membawa dalil dan argumen.</p>
+
+            <div class="flex flex-col items-center gap-2 mb-8 w-full max-w-[200px] mx-auto">
+                <div class="w-full bg-slate-800 p-2 rounded text-center text-sm font-bold text-slate-300">Iman</div>
+                <i class="fa-solid fa-arrow-down text-purple-500 text-xs"></i>
+                <div class="w-full bg-slate-800 p-2 rounded text-center text-sm font-bold text-slate-300">Berpikir</div>
+                <i class="fa-solid fa-arrow-down text-purple-500 text-xs"></i>
+                <div class="w-full bg-slate-800 p-2 rounded text-center text-sm font-bold text-slate-300">Dalil / Bukti</div>
+                <i class="fa-solid fa-arrow-down text-purple-500 text-xs"></i>
+                <div class="w-full bg-purple-600 p-2 rounded text-center text-sm font-bold text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]">Yakin</div>
+            </div>
+
+            <div class="bg-card border border-slate-700 p-4 rounded-xl flex gap-3 items-start">
+                <div class="text-red-400 text-xl"><i class="fa-solid fa-masks-theater"></i></div>
+                <div>
+                    <h4 class="font-bold text-sm text-white mb-1">Fenomena Nabi Palsu</h4>
+                    <p class="text-[11px] text-slate-400 tight-text">Kritis terhadap tokoh masa kini yang mengaku memiliki otoritas agama secara keliru untuk menyesatkan umat.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-10">
+            <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/20 via-slate-900 to-slate-900"></div>
+            
+            <div class="text-center">
+                <span class="inline-block bg-accent text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-widest mb-8">
+                    BAGIAN PALING PENTING
+                </span>
+
+                <div class="bg-card/50 backdrop-blur border border-slate-700 p-5 rounded-2xl mb-8">
+                    <p class="text-sm text-slate-400 mb-2">Sahabat bertanya:</p>
+                    <h3 class="text-xl font-bold text-white mb-6">"Kapan Kiamat?"</h3>
+                    
+                    <p class="text-sm text-slate-400 mb-2">Rasulullah menjawab:</p>
+                    <h3 class="text-2xl font-black text-accent tight-text">"Apa yang sudah kamu persiapkan?"</h3>
+                </div>
+
+                <div class="flex items-center justify-center gap-4 bg-slate-800/80 p-3 rounded-full border border-slate-700 max-w-[250px] mx-auto">
+                    <span class="text-slate-500 font-bold text-sm line-through decoration-red-500">KAPAN?</span>
+                    <i class="fa-solid fa-arrow-right text-accent"></i>
+                    <span class="text-white font-bold text-lg">SUDAH SIAP?</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-11">
+            <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                <i class="fa-solid fa-shield-heart text-pink-400"></i> Persiapan Praktis
+            </h2>
+            <p class="text-xs text-slate-400 mb-6">Bukan sekadar menebak tanggal, melainkan aksi:</p>
+
+            <div class="space-y-3">
+                <div class="bg-slate-800 p-3 rounded-xl flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-red-500/20 text-red-400 flex justify-center items-center"><i class="fa-solid fa-heart"></i></div>
+                    <span class="text-sm font-medium text-slate-200">Mencintai Allah & Rasul</span>
+                </div>
+                <div class="bg-slate-800 p-3 rounded-xl flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex justify-center items-center"><i class="fa-solid fa-children"></i></div>
+                    <span class="text-sm font-medium text-slate-200">Berbakti pada Orang Tua</span>
+                </div>
+                <div class="bg-slate-800 p-3 rounded-xl flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex justify-center items-center"><i class="fa-solid fa-handshake-angle"></i></div>
+                    <span class="text-sm font-medium text-slate-200">Membantu Sesama</span>
+                </div>
+                <div class="bg-slate-800 p-3 rounded-xl flex items-center gap-4 border border-indigo-500/30">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex justify-center items-center"><i class="fa-solid fa-seedling"></i></div>
+                    <span class="text-sm font-medium text-slate-200 tight-text">Tinggalkan amal & generasi yang baik</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-12">
+            <div class="text-center mb-6">
+                <div class="text-4xl text-yellow-400 mb-2"><i class="fa-solid fa-star"></i></div>
+                <h2 class="text-xl font-bold text-white">Hikmah Akhir</h2>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl mb-6">
+                <h4 class="text-xs font-bold text-yellow-400 mb-3"><i class="fa-solid fa-filter"></i> Filter Literasi:</h4>
+                <ul class="text-[11px] space-y-2 text-slate-300">
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 block"></span> <b>Nash:</b> Dalil Al-Qur'an (Mutlak)</li>
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-yellow-500 block"></span> <b>Riwayat:</b> Hadis (Cek derajatnya)</li>
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500 block"></span> <b>Tafsir:</b> Pemahaman ulama</li>
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-500 block"></span> <b>Spekulasi:</b> Teori konspirasi/cocoklogi</li>
+                </ul>
+            </div>
+
+            <div class="text-center text-sm text-slate-400 tight-text border-t border-slate-700 pt-4">
+                "Keimanan tidak menutup ruang berpikir kritis. Kematian mengingatkan manusia bahwa hidup memiliki tujuan."
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 w-full h-20 bg-slate-900 border-t border-slate-800 flex items-center justify-between px-6 z-50">
+            <button id="btn-prev" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition disabled:opacity-30 disabled:pointer-events-none">
+                <i class="fa-solid fa-chevron-left text-xl"></i>
+            </button>
+            <span class="text-xs text-slate-500 font-medium tracking-wide">TAP / SWIPE</span>
+            <button id="btn-next" class="w-12 h-12 rounded-full flex items-center justify-center text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-[0_0_15px_rgba(79,70,229,0.4)] disabled:opacity-30 disabled:pointer-events-none">
+                <i class="fa-solid fa-chevron-right text-xl"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            let currentSlide = 0;
+
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const progressContainer = document.getElementById('progress-container');
+            const counterText = document.getElementById('slide-counter');
+            const touchArea = document.getElementById('touch-area');
+
+            // Initialize Progress Bar
+            for (let i = 0; i < totalSlides; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'progress-segment';
+                segment.innerHTML = `<div class="progress-fill" id="fill-${i}"></div>`;
+                progressContainer.appendChild(segment);
+            }
+
+            function updateUI() {
+                // Update Classes for animation
+                slides.forEach((slide, index) => {
+                    slide.classList.remove('active', 'previous');
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else if (index < currentSlide) {
+                        slide.classList.add('previous');
+                    }
+                });
+
+                // Update Progress Bar
+                for (let i = 0; i < totalSlides; i++) {
+                    const fill = document.getElementById(`fill-${i}`);
+                    if (i < currentSlide) {
+                        fill.style.width = '100%';
+                    } else if (i === currentSlide) {
+                        fill.style.width = '50%'; // Indicator for current
+                    } else {
+                        fill.style.width = '0%';
+                    }
+                }
+                
+                // Final slide full fill visual
+                if(currentSlide === totalSlides - 1){
+                     document.getElementById(`fill-${currentSlide}`).style.width = '100%';
+                }
+
+                // Update Counter
+                counterText.innerText = `${currentSlide + 1}/${totalSlides}`;
+
+                // Button States
+                btnPrev.disabled = currentSlide === 0;
+                btnNext.disabled = currentSlide === totalSlides - 1;
+                
+                // Change next icon to check if last slide
+                if(currentSlide === totalSlides - 1) {
+                    btnNext.innerHTML = '<i class="fa-solid fa-check text-xl"></i>';
+                    btnNext.classList.replace('bg-indigo-600', 'bg-emerald-600');
+                    btnNext.classList.replace('hover:bg-indigo-500', 'hover:bg-emerald-500');
+                } else {
+                    btnNext.innerHTML = '<i class="fa-solid fa-chevron-right text-xl"></i>';
+                    btnNext.classList.replace('bg-emerald-600', 'bg-indigo-600');
+                    btnNext.classList.replace('hover:bg-emerald-500', 'hover:bg-indigo-500');
+                }
+            }
+
+            function goNext() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateUI();
+                }
+            }
+
+            function goPrev() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateUI();
+                }
+            }
+
+            // Click Listeners
+            btnNext.addEventListener('click', goNext);
+            btnPrev.addEventListener('click', goPrev);
+
+            // Tap Listeners on Body (Left side = Prev, Right side = Next)
+            touchArea.addEventListener('click', (e) => {
+                const screenWidth = window.innerWidth;
+                const clickX = e.clientX;
+                if (clickX > screenWidth * 0.6) {
+                    goNext();
+                } else if (clickX < screenWidth * 0.4) {
+                    goPrev();
+                }
+            });
+
+            // Swipe Gestures
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            touchArea.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            touchArea.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+
+            function handleSwipe() {
+                const swipeThreshold = 40;
+                if (touchEndX < touchStartX - swipeThreshold) {
+                    goNext(); // Swipe Left
+                }
+                if (touchEndX > touchStartX + swipeThreshold) {
+                    goPrev(); // Swipe Right
+                }
+            }
+            
+            // Keyboard Nav
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'ArrowRight') goNext();
+                if(e.key === 'ArrowLeft') goPrev();
+            });
+
+            // Init
+            updateUI();
+        });
+    </script>
+</body>
+</html>
